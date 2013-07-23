@@ -1,6 +1,10 @@
 <!DOCTYPE html>
-<!-- source: http://bl.ocks.org/mbostock/4063318 -->
-<!-- csv source must in yyyy-mm-dd date format as key -->
+<!--
+source: http://bl.ocks.org/mbostock/4063318
+input: biodata.csv must in yyyy-mm-dd date format as key
+TODO: Filter on year data
+TODO: Filter on type of legend
+-->
 <meta charset="utf-8">
 <style>
  
@@ -37,6 +41,8 @@ stroke-width: 2px;
 <script src="js/d3.v3.min.js"></script>
 <script>
  
+var comments = new Array();
+
 var width = 960,
 height = 136,
 cellSize = 17; // cell size
@@ -87,20 +93,24 @@ d3.csv("biodata.csv", function(error, csv) {
 var data = d3.nest()
 .key(function(d) { return d.Date; })
 .rollup(function(d) {
-    /**return (d[0].Close - d[0].Open) / d[0].Open; */
-    if(d[0].Type == "sick")
+	comments[d[0].Date] = d[0].Type;
+	if(d[0].Remark != "") comments[d[0].Date] += " " + d[0].Remark;
+    if(d[0].Type == "sick") {
         return -0.02;
-    else if(d[0].Type == "sperm")
+	} else if(d[0].Type == "sperm") {
         return -0.04;
-    else
-        return -0.1; 
+	} else {
+        return -0.1;
+	}
 })
 .map(csv);
  
 rect.filter(function(d) { return d in data; })
 .attr("class", function(d) { return "day " + color(data[d]); })
 .select("title")
-.text(function(d) { return d + ": " + percent(data[d]); });
+.text(function(d) {
+	return d + ": " + comments[d];// + percent(data[d]);
+});
 });
  
 function monthPath(t0) {

@@ -99,6 +99,10 @@ var data = d3.nest()
         return -0.02;
 	} else if(d[0].Type == "sperm") {
         return -0.04;
+	} else if(d[0].Type == "half") {
+		return 0.03;
+	} else if(d[0].Type == "ooo") {
+		return 0.04;
 	} else {
         return -0.1;
 	}
@@ -163,11 +167,11 @@ return "M" + (w0 + 1) * cellSize + "," + d0 * cellSize
     </tr>
     <tr>
         <td class="q8-11"/>
-        <td>&nbsp;</td>
+        <td>Half day</td>
     </tr>
     <tr>
         <td class="q9-11"/>
-        <td>&nbsp;</td>
+        <td>OOO</td>
     </tr>
     <tr>
         <td class="q10-11"/>

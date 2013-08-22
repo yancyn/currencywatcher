@@ -85,6 +85,14 @@ svg.selectAll(".month")
     .attr("class", "month")
     .attr("d", monthPath);
 
+// adding weekday label
+var weekdays = Array('M', 'W', 'F');
+for(var i=0;i<weekdays.length;i++) {
+svg.append("text")
+	.attr("transform", "translate(" + (53*cellSize) + ", " + ( (i*2+1) *cellSize+8) + ")")
+	.text(weekdays[i]);
+}
+
 // change source file. Contains 3 columns - Date, Commits, Messages
 d3.csv("grouped.csv", function(error, csv) {
   var data = d3.nest()
@@ -118,7 +126,5 @@ function monthPath(t0) {
       + "H" + (w1 + 1) * cellSize + "V" + 0
       + "H" + (w0 + 1) * cellSize + "Z";
 }
-
-//d3.select(self.frameElement).style("height", "2910px");
 
 </script>

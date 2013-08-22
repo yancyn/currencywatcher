@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TODO: Show month in graph header -->
+<!-- TODO: Show count of file changes instead of commit count. -->
 <meta charset="utf-8">
 <style>
 
@@ -40,7 +40,7 @@ body {
 var messages = new Array();// show commit messages
 
 var width = 960,
-    height = 136,
+    height = 150;//136,
     cellSize = 17; // cell size
 
 var day = d3.time.format("%w"),
@@ -90,7 +90,17 @@ var weekdays = Array('M', 'W', 'F');
 for(var i=0;i<weekdays.length;i++) {
 svg.append("text")
 	.attr("transform", "translate(" + (53*cellSize) + ", " + ( (i*2+1) *cellSize+8) + ")")
+	//.style("fill","#aaaaaa")
 	.text(weekdays[i]);
+}
+
+// adding month label
+var months = Array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+for(var i=0;i<months.length;i++) {
+svg.append("text")
+	.attr("transform", "translate(" + (i*width/12) + ", " + (-1*cellSize+8) + ")")
+	//.style("fill","#aaaaaa")
+	.text(months[i]);
 }
 
 // change source file. Contains 3 columns - Date, Commits, Messages

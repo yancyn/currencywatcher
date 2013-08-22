@@ -37,6 +37,8 @@ body {
 <script src="js/d3.v3.min.js"></script>
 <script>
 
+var messages = new Array();// show commit messages
+
 var width = 960,
     height = 136,
     cellSize = 17; // cell size
@@ -83,11 +85,14 @@ svg.selectAll(".month")
     .attr("class", "month")
     .attr("d", monthPath);
 
+// change source file. Contains 3 columns - Date, Commits, Messages
 d3.csv("grouped.csv", function(error, csv) {
   var data = d3.nest()
     .key(function(d) { return d.Date; })
     .rollup(function(d) {
-    	return d[0].Commits/100; // decide frequency
+    	//console.log(d[0].Messages);
+    	messages[d[0].Date] = d[0].Messages;
+    	return d[0].Commits / 100; // decide frequency
 	})
     .map(csv);
 
@@ -95,8 +100,11 @@ d3.csv("grouped.csv", function(error, csv) {
       .attr("class", function(d) { return "day " + color(data[d]); })
     .select("title")
       .text(function(d) {
-        //console.log(data[d]);
-      	return d + ": " + Math.round(data[d]*100) + " commits";// percent(data[d]);// TODO: Show full all commits message in a day.
+        // Show full all commits message in a day.
+        var details = "";
+        details += d + ": " + Math.round(data[d]*100) + " commits";
+        details += "\n" + messages[d];
+        return details;
       });
 });
 

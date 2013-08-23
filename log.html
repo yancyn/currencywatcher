@@ -53,7 +53,7 @@ var color = d3.scale.quantize()
     .range(d3.range(11).map(function(d) { return "q" + d + "-11"; }));
 
 var svg = d3.select("body").selectAll("svg")
-    .data(d3.range(2010, 2014))
+    .data(d3.range(2013, 2014))
   .enter().append("svg")
     .attr("width", width)
     .attr("height", height)
@@ -104,7 +104,7 @@ svg.append("text")
 }
 
 // change source file. Contains 3 columns - Date, Commits, Messages
-d3.csv("grouped.csv", function(error, csv) {
+d3.csv("commits.csv", function(error, csv) {
   var data = d3.nest()
     .key(function(d) { return d.Date; })
     .rollup(function(d) {

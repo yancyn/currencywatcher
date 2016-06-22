@@ -5,12 +5,18 @@
   <script src="http://code.jquery.com/jquery-latest.min.js"></script>
   <script src="http://openexchangerates.github.io/money.js/money.min.js"></script>
   <script>
-  $(function() {
-    $.getJSON("http://api.fixer.io/latest?base=USD", function(data) {
+  // see documentation at http://fixer.io/
+
+  function getRates(from, to) {
+    $.getJSON("http://api.fixer.io/"+to+"?base=USD", function(data) {
       $.each(data.rates, function(key, val) {
         console.log(key+":"+val);
       });
     });
+  }
+
+  $(function() {
+    getRates('2016-06-01', '2016-06-21');
   });
   </script>
 </head>

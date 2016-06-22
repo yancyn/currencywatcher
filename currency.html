@@ -68,7 +68,15 @@
     var day = date.getDate();
     var from = new Date(year, month, 1);
     var to = new Date(year, month, day)
-    getRates(from.getTime(), to.getTime());
+    //getRates(from.getTime(), to.getTime()); // HACK: Temp disable
+
+    var demo = function(data) {
+      fx.rates = data.rates;
+      var rate = fx(1).from("GBP").to("USD");
+      alert("£1 = $" + rate.toFixed(4));
+    };
+    $.getJSON("http://api.fixer.io/latest", demo);
+
   });
   </script>
 </head>

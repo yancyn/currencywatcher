@@ -73,7 +73,8 @@
             // deduct local time
             var utc = data["timestamp"]*1000 + new Date().getTimezoneOffset()*60*1000;
             var date = new Date(utc);
-            console.log(toDateString(date)+"    "+key+":"+val);
+            //console.log(toDateString(date)+"    "+key+":"+val);
+            rates[key][toDateString(date)] = val;
           }
         });
       });
@@ -84,18 +85,30 @@
   }
 
   /**
-   * Get online rates and plot the chart.
+   * TODO: Get online rates and plot the chart.
+   * @see https://plot.ly/javascript/time-series/
+   * @see http://www.chartjs.org/
+   * @see https://d3js.org/
    */
   function plot() {
     console.log("Start to plot");
 
+    // define global dictionary variables
+    $('#to input[type=checkbox]:checked').each(function() {
+      var key = $(this).attr('value');
+      rates[key] = new Array();
+    });
+
+    // TODO: Retrieve until few months back
     var date = new Date();
     var year = date.getFullYear();
     var month = date.getMonth();
     var day = date.getDate();
     var from = new Date(year, month, 1);
     var to = new Date(year, month, day);
-    getRates(to.getTime(), to.getTime()); // TODO: Change to correct date period
+    getRates(from.getTime(), to.getTime()); // TODO: Change to correct date period
+
+    console.log(rates);
   }
 
   /**
@@ -122,7 +135,7 @@
   </style>
   <script>
   // global variables
-  var selected = []; // selection of convert to currency
+  var rates = new Array(); // selection of convert to currency
   // List out all currencies in the world
   var currencies = ["AED","AFN","ALL","AMD","ANG","AOA","ARS","AUD","AWG","AZN","BAM","BBD","BDT","BGN","BHD","BIF","BMD","BND","BOB","BRL","BSD","BTC","BTN","BWP","BYR","BZD","CAD","CDF","CHF","CLF","CLP","CNY","COP","CRC","CUC","CUP","CVE","CZK","DJF","DKK","DOP","DZD","EEK","EGP","ERN","ETB","EUR","FJD","FKP","GBP","GEL","GGP","GHS","GIP","GMD","GNF","GTQ","GYD","HKD","HNL","HRK","HTG","HUF","IDR","ILS","IMP","INR","IQD","IRR","ISK","JEP","JMD","JOD","JPY","KES","KGS","KHR","KMF","KPW","KRW","KWD","KYD","KZT","LAK","LBP","LKR","LRD","LSL","LTL","LVL","LYD","MAD","MDL","MGA","MKD","MMK","MNT","MOP","MRO","MTL","MUR","MVR","MWK","MXN","MYR","MZN","NAD","NGN","NIO","NOK","NPR","NZD","OMR","PAB","PEN","PGK","PHP","PKR","PLN","PYG","QAR","RON","RSD","RUB","RWF","SAR","SBD","SCR","SDG","SEK","SGD","SHP","SLL","SOS","SRD","STD","SVC","SYP","SZL","THB","TJS","TMT","TND","TOP","TRY","TTD","TWD","TZS","UAH","UGX","USD","UYU","UZS","VEF","VND","VUV","WST","XAF","XAG","XAU","XCD","XDR","XOF","XPD","XPF","XPT","YER","ZAR","ZMK","ZMW","ZWL"];
   </script>

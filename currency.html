@@ -5,6 +5,181 @@
   <script src="http://code.jquery.com/jquery-latest.min.js"></script>
   <script>
 
+  // List out all currencies in the world
+  var currencies = [
+"AED",
+"AFN",
+"ALL",
+"AMD",
+"ANG",
+"AOA",
+"ARS",
+"AUD",
+"AWG",
+"AZN",
+"BAM",
+"BBD",
+"BDT",
+"BGN",
+"BHD",
+"BIF",
+"BMD",
+"BND",
+"BOB",
+"BRL",
+"BSD",
+"BTC",
+"BTN",
+"BWP",
+"BYR",
+"BZD",
+"CAD",
+"CDF",
+"CHF",
+"CLF",
+"CLP",
+"CNY",
+"COP",
+"CRC",
+"CUC",
+"CUP",
+"CVE",
+"CZK",
+"DJF",
+"DKK",
+"DOP",
+"DZD",
+"EEK",
+"EGP",
+"ERN",
+"ETB",
+"EUR",
+"FJD",
+"FKP",
+"GBP",
+"GEL",
+"GGP",
+"GHS",
+"GIP",
+"GMD",
+"GNF",
+"GTQ",
+"GYD",
+"HKD",
+"HNL",
+"HRK",
+"HTG",
+"HUF",
+"IDR",
+"ILS",
+"IMP",
+"INR",
+"IQD",
+"IRR",
+"ISK",
+"JEP",
+"JMD",
+"JOD",
+"JPY",
+"KES",
+"KGS",
+"KHR",
+"KMF",
+"KPW",
+"KRW",
+"KWD",
+"KYD",
+"KZT",
+"LAK",
+"LBP",
+"LKR",
+"LRD",
+"LSL",
+"LTL",
+"LVL",
+"LYD",
+"MAD",
+"MDL",
+"MGA",
+"MKD",
+"MMK",
+"MNT",
+"MOP",
+"MRO",
+"MTL",
+"MUR",
+"MVR",
+"MWK",
+"MXN",
+"MYR",
+"MZN",
+"NAD",
+"NGN",
+"NIO",
+"NOK",
+"NPR",
+"NZD",
+"OMR",
+"PAB",
+"PEN",
+"PGK",
+"PHP",
+"PKR",
+"PLN",
+"PYG",
+"QAR",
+"RON",
+"RSD",
+"RUB",
+"RWF",
+"SAR",
+"SBD",
+"SCR",
+"SDG",
+"SEK",
+"SGD",
+"SHP",
+"SLL",
+"SOS",
+"SRD",
+"STD",
+"SVC",
+"SYP",
+"SZL",
+"THB",
+"TJS",
+"TMT",
+"TND",
+"TOP",
+"TRY",
+"TTD",
+"TWD",
+"TZS",
+"UAH",
+"UGX",
+"USD",
+"UYU",
+"UZS",
+"VEF",
+"VND",
+"VUV",
+"WST",
+"XAF",
+"XAG",
+"XAU",
+"XCD",
+"XDR",
+"XOF",
+"XPD",
+"XPF",
+"XPT",
+"YER",
+"ZAR",
+"ZMK",
+"ZMW",
+"ZWL"
+  ];
+
   /**
    * Mask a string value by append zero with a fixed digit.
    * @param value String
@@ -63,8 +238,16 @@
     }
   }
 
-  // TODO: List out all currencies for country.
   $(function() {
+
+    // define dropdownlist for base currency option
+    for(i=0;i<currencies.length;i++) {
+      $("#base").append("<option value='"+currencies[i]+"'>"+currencies[i]+"</option>");
+    }
+    // define target currency convert to
+    for(i=0;i<currencies.length;i++) {
+      $("#to").append("<li><input type='checkbox' name='currency' value='"+currencies[i]+"' />"+currencies[i]+"</li>");
+    }
 
     var date = new Date();
     var year = date.getFullYear();
@@ -72,11 +255,14 @@
     var day = date.getDate();
     var from = new Date(year, month, 1);
     var to = new Date(year, month, day);
-    getRates(from.getTime(), to.getTime());
+    //getRates(from.getTime(), to.getTime()); // TODO: Change to correct date period
 
   });
   </script>
 </head>
 <body>
+  Base<select id="base"></select><input type="submit" value="GET"/><br/>
+  To<br/>
+  <ul id="to"></ul>
 </body>
 </html>

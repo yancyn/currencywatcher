@@ -6,6 +6,9 @@
   <script src="http://openexchangerates.github.io/money.js/money.min.js"></script>
   <script>
 
+  // TODO: List out all currencies for country.
+  //
+
   /**
    * Mask a string value by append zero with a fixed digit.
    * @param value String
@@ -43,6 +46,7 @@
    * @param from Timestamp in milliseconds
    * @param to Timestamp in milliseconds
    * @see http://fixer.io/
+   * @see https://openexchangerates.org/
    */
   function getRates(from, to) {
     console.log("getRates("+from+","+to+")");
@@ -51,8 +55,7 @@
     while(from < to) {
       $.getJSON("http://api.fixer.io/"+toDateString(date1)+"?base=USD", function(data) {
         $.each(data.rates, function(key, val) {
-          console.log(toDateString(date1));
-          console.log("    "+key+":"+val);
+          console.log(data.date+"    "+key+":"+val);
         });
       });
 
@@ -72,10 +75,14 @@
 
     var demo = function(data) {
       fx.rates = data.rates;
-      var rate = fx(1).from("GBP").to("USD");
-      alert("£1 = $" + rate.toFixed(4));
+      var rate = fx.convert(1, {from: "USD", to: "MYR"});
+      // target currency must found in fx.rates result otherwise will throw exception
+      console.log("USD1=MYR"+rate);
     };
     $.getJSON("http://api.fixer.io/latest", demo);
+
+    // failed
+    //$.getJSON("http://api.fixer.io/latest?symbols=USD,VND", demo);
 
   });
   </script>

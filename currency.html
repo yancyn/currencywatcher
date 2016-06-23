@@ -5,9 +5,74 @@
   <script src="http://code.jquery.com/jquery-latest.min.js"></script>
   <script>
 
+  /**
+   * Mask a string value by append zero with a fixed digit.
+   * @param value String
+   * @param digit Maximum digit to return
+   */
+  function appendZero(value, digit) {
+    var output = "";
+    for(i=value.length+1;i<=digit;i++) {
+        output += "0";
+    }
+    output += value.toString();
+    return output;
+  }
+
+  /**
+   * Return string for date in format yyyy-mm-dd.
+   */
+  function toDateString(date) {
+    var output = "";
+    var year = date.getFullYear();
+    var month = date.getMonth();
+    month++;
+    var day = date.getDate();
+
+    output += year.toString();
+    output += "-";
+    output += appendZero(month.toString(),2);
+    output += "-";
+    output += appendZero(day.toString(),2);
+    return output;
+  }
+
+  /**
+   * Get currency rates from date1 until date2.
+   * @param from Unix timestamp in milliseconds
+   * @param to Unix timestamp in milliseconds
+   * @see https://openexchangerates.org/
+   */
+  function getRates(from, to) {
+    console.log("getRates("+from+","+to+")");
+    var date1 = new Date(from);
+    var date2 = new Date(to);
+    while(from <= to) {
+      $.getJSON("https://openexchangerates.org/api/historical/"+toDateString(date1)+".json?app_id="+app_id, function(data) {
+        $.each(data.rates, function(key, val) {
+          // deduct local time
+          var utc = data["timestamp"]*1000 + new Date().getTimezoneOffset()*60*1000;
+          var date = new Date(utc);
+          console.log(toDateString(date)+"    "+key+":"+val);
+        });
+      });
+
+      from += 1000*60*60*24;
+      date1 = new Date(from);
+    }
+  }
+
   // TODO: List out all currencies for country.
   $(function() {
-    $.getJSON("https://openexchangerates.org/api/latest.json");
+
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = date.getMonth();
+    var day = date.getDate();
+    var from = new Date(year, month, 1);
+    var to = new Date(year, month, day);
+    getRates(from.getTime(), to.getTime());
+
   });
   </script>
 </head>

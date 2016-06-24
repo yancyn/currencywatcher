@@ -111,6 +111,7 @@
       // see http://stackoverflow.com/questions/32501298/callback-after-getjson-in-for-loop
       .always(function() {
         process++;
+        $("#message").html("Retrieving..."+(process-1).toString()+"/"+counter);
         //console.log(process+"<>"+counter);
         if(process == counter) {
           plotChart();
@@ -152,7 +153,7 @@
   }
 
   /**
-   * Initial layout
+   * Initial layout.
    */
   $(function() {
 
@@ -186,11 +187,12 @@
   <select id="base">
     <option value="USD">USD</option>
   </select>
-  &nbsp;since last <input id="day"/> days
-  <input type="submit" value="GET" onclick="plot();" /><br/>
+  &nbsp;since <input id="day"/> days ago
+  <input type="submit" value="GET" onclick="plot();" />
+  <span id="message"></span>
+  <br/>
   To<ul id="to"></ul>
-  <div id="chartArea" style="width:800px;">
-    <!-- Plotly chart will be drawn inside this DIV -->
-  </div>
+  <!-- Plotly chart will be drawn inside this DIV -->
+  <div id="chartArea" style="width:800px;"></div>
 </body>
 </html>

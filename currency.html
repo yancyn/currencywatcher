@@ -59,11 +59,18 @@
       var rate = [];
       rate['name'] = key;
       rate['type'] = 'scatter';
+
+      // sort record according to date key
+      rates[key].sort(function(a,b) {
+        var date1 = new Date(a['date']);
+        var date2 = new Date(b['date']);
+        return date1.getTime()-date2.getTime();
+      });
+
       var keys = [];
       var values = [];
       for(i=0;i<rates[key].length;i++) {
         var record = rates[key][i];
-        //console.log(record);
         keys.push(record['date']);
         values.push(record['value']);
       }

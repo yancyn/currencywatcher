@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>World Currencies History</title>
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script>
+
+  /**
+   * Mask a string value by append zero with a fixed digit.
+   * @param value String
+   * @param digit Maximum digit to return
+   */
+  function appendZero(value, digit) {
+    var output = "";
+    for(i=value.length+1;i<=digit;i++) {
+        output += "0";
+    }
+    output += value.toString();
+    return output;
+  }
+
+  /**
+   * Return string for date in format yyyy-mm-dd.
+   */
+  function toDateString(date) {
+    var output = "";
+    var year = date.getFullYear();
+    var month = date.getMonth();
+    month++;
+    var day = date.getDate();
+
+    output += year.toString();
+    output += "-";
+    output += appendZero(month.toString(),2);
+    output += "-";
+    output += appendZero(day.toString(),2);
+    return output;
+  }
+
+  /**
+   * Return true if checked in convert to currency.
+   */
+  function isCurrency(currency) {
+    var selected = false;
+    $('#to input[type=checkbox]:checked').each(function() {
+      if(currency == $(this).attr('value')) {
+        selected = true;
+      }
+    });
+    return selected;
+  }
+
+  function plotChart() {
+    // convert rates array into data array for chart use
+    var data = [];
+    $('#to input[type=checkbox]:checked').each(function() {
+      var key = $(this).attr('value');
+      var rate = [];
+      rate['name'] = key;
+      rate['type'] = 'scatter';
+
+      // sort record according to date key
+      rates[key].sort(function(a,b) {
+        var date1 = new Date(a['date']);
+        var date2 = new Date(b['date']);
+        return date1.getTime()-date2.getTime();
+      });
+
+      var keys = [];
+      var values = [];
+      for(i=0;i<rates[key].length;i++) {
+        var record = rates[key][i];
+        keys.push(record['date']);
+        values.push(record['value']);
+      }
+      rate['x'] = keys;
+      rate['y'] = values;
+      data.push(rate);
+    });
+    //console.log(data);
+    Plotly.newPlot('chartArea', data);
+  }
+
+  /**
+   * Get currency rates from date1 until date2.
+   * @param from Unix timestamp in milliseconds
+   * @param to Unix timestamp in milliseconds
+   * @see https://openexchangerates.org/
+   */
+  function getRates(from, to) {
+    var process = 0;
+    console.log("getRates("+from+","+to+")");
+    var app_id = "";
+    var base = $("#base").val();
+    var date1 = new Date(from);
+    var date2 = new Date(to);
+    while(from <= to) {
+      var url = "https://openexchangerates.org/api/historical/"+toDateString(date1)+".json";
+      url += "?base="+base;
+      url += "&app_id="+app_id;
+      $.getJSON(url, function(data) {
+        $.each(data.rates, function(key, val) {
+
+          if(isCurrency(key)) {
+            // deduct local time
+            var utc = data["timestamp"]*1000 + new Date().getTimezoneOffset()*60*1000;
+            var date = new Date(utc);
+            //console.log(toDateString(date)+"    "+key+":"+val);
+            var json = [];
+            json['date'] = toDateString(date);
+            json['value'] = val;
+            rates[key].push(json);
+            //rates[key][toDateString(date)] = val;
+          }
+        });
+      })
+      // see http://stackoverflow.com/questions/32501298/callback-after-getjson-in-for-loop
+      .always(function() {
+        process++;
+        $("#message").html("Retrieving..."+(process-1).toString()+"/"+counter);
+        //console.log(process+"<>"+counter);
+        if(process == counter) {
+          plotChart();
+        }
+      });
+
+      from += 1000*60*60*24;
+      date1 = new Date(from);
+    }
+    //console.log(rates);
+  }
+
+  /**
+   * Get online rates and plot the chart.
+   * @see https://plot.ly/javascript/time-series/
+   * @see http://www.chartjs.org/
+   * @see https://d3js.org/
+   */
+  function plot() {
+    console.log("Start to plot");
+
+    // define global dictionary variables
+    $('#to input[type=checkbox]:checked').each(function() {
+      var key = $(this).attr('value');
+      rates[key] = [];
+    });
+
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = date.getMonth();
+    var day = date.getDate();
+
+    counter = $("#day").val();
+    var to = new Date(year, month, day);
+    var since = to.getTime()-counter*1000*60*60*24;
+    var from = new Date(since);
+    //var from = new Date(year, month, 1);
+    getRates(from.getTime(), to.getTime());
+  }
+
+  /**
+   * Initial layout.
+   */
+  $(function() {
+
+    // free openexchangerates account only available in USD as base
+    // define dropdownlist for base currency option
+    // for(i=0;i<currencies.length;i++) {
+    //   $("#base").append("<option value='"+currencies[i]+"'>"+currencies[i]+"</option>");
+    // }
+
+    // define target currency convert to
+    for(i=0;i<currencies.length;i++) {
+      $("#to").append("<li><input type='checkbox' name='currency' value='"+currencies[i]+"' />"+currencies[i]+"</li>");
+    }
+
+  });
+  </script>
+  <style>
+  ul {list-style-type: none;padding:0;}
+  ul li {display:inline;}
+  </style>
+  <script>
+  // global variables
+  var rates = []; // selection of convert to currency
+  var counter = 0; // a flag to only plot chart after finish extract all rates values into collection
+  // List out all currencies in the world
+  var currencies = ["AED","AFN","ALL","AMD","ANG","AOA","ARS","AUD","AWG","AZN","BAM","BBD","BDT","BGN","BHD","BIF","BMD","BND","BOB","BRL","BSD","BTC","BTN","BWP","BYR","BZD","CAD","CDF","CHF","CLF","CLP","CNY","COP","CRC","CUC","CUP","CVE","CZK","DJF","DKK","DOP","DZD","EEK","EGP","ERN","ETB","EUR","FJD","FKP","GBP","GEL","GGP","GHS","GIP","GMD","GNF","GTQ","GYD","HKD","HNL","HRK","HTG","HUF","IDR","ILS","IMP","INR","IQD","IRR","ISK","JEP","JMD","JOD","JPY","KES","KGS","KHR","KMF","KPW","KRW","KWD","KYD","KZT","LAK","LBP","LKR","LRD","LSL","LTL","LVL","LYD","MAD","MDL","MGA","MKD","MMK","MNT","MOP","MRO","MTL","MUR","MVR","MWK","MXN","MYR","MZN","NAD","NGN","NIO","NOK","NPR","NZD","OMR","PAB","PEN","PGK","PHP","PKR","PLN","PYG","QAR","RON","RSD","RUB","RWF","SAR","SBD","SCR","SDG","SEK","SGD","SHP","SLL","SOS","SRD","STD","SVC","SYP","SZL","THB","TJS","TMT","TND","TOP","TRY","TTD","TWD","TZS","UAH","UGX","USD","UYU","UZS","VEF","VND","VUV","WST","XAF","XAG","XAU","XCD","XDR","XOF","XPD","XPF","XPT","YER","ZAR","ZMK","ZMW","ZWL"];
+  </script>
+</head>
+<body>
+  Base
+  <select id="base">
+    <option value="USD">USD</option>
+  </select>
+  &nbsp;since <input id="day"/> days ago
+  <input type="submit" value="GET" onclick="plot();" />
+  <span id="message"></span>
+  <br/>
+  To<ul id="to"></ul>
+  <!-- Plotly chart will be drawn inside this DIV -->
+  <div id="chartArea" style="width:800px;"></div>
+</body>
+</html>

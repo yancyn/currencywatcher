@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>World Currencies History</title>
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+  <script src="http://openexchangerates.github.io/money.js/money.min.js"></script>
+  <script>
+
+  // TODO: List out all currencies for country.
+  //
+
+  /**
+   * Mask a string value by append zero with a fixed digit.
+   * @param value String
+   * @param digit Maximum digit to return
+   */
+  function appendZero(value, digit) {
+    var output = "";
+    for(i=value.length+1;i<=digit;i++) {
+        output += "0";
+    }
+    output += value.toString();
+    return output;
+  }
+
+  /**
+   * Return string for date in format yyyy-mm-dd.
+   */
+  function toDateString(date) {
+    var output = "";
+    var year = date.getFullYear();
+    var month = date.getMonth();
+    month++;
+    var day = date.getDate();
+
+    output += year.toString();
+    output += "-";
+    output += appendZero(month.toString(),2);
+    output += "-";
+    output += appendZero(day.toString(),2);
+    return output;
+  }
+
+  /**
+   * Get currency rates from date1 until date2.
+   * @param from Timestamp in milliseconds
+   * @param to Timestamp in milliseconds
+   * @see http://fixer.io/
+   * @see https://openexchangerates.org/
+   */
+  function getRates(from, to) {
+    console.log("getRates("+from+","+to+")");
+    var date1 = new Date(from);
+    var date2 = new Date(to);
+    while(from <= to) {
+      $.getJSON("http://api.fixer.io/"+toDateString(date1)+"?base=USD", function(data) {
+        $.each(data.rates, function(key, val) {
+          console.log(data.date+"    "+key+":"+val);
+        });
+      });
+
+      from += 1000*60*60*24;
+      date1 = new Date(from);
+    }
+  }
+
+  $(function() {
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = date.getMonth();
+    var day = date.getDate();
+    var from = new Date(year, month, 1);
+    var to = new Date(year, month, day);
+    getRates(from.getTime(), to.getTime());
+
+    // var demo = function(data) {
+    //   fx.rates = data.rates;
+    //   var rate = fx.convert(1, {from: "USD", to: "MYR"});
+    //   // target currency must found in fx.rates result otherwise will throw exception
+    //   console.log("USD1=MYR"+rate);
+    // };
+    // $.getJSON("http://api.fixer.io/latest", demo);
+
+    // failed
+    //$.getJSON("http://api.fixer.io/latest?symbols=USD,VND", demo);
+
+  });
+  </script>
+</head>
+<body>
+</body>
+</html>
